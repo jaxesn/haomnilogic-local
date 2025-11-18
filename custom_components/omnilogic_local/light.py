@@ -3,10 +3,9 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
-from pyomnilogic_local.omnitypes import ColorLogicBrightness, ColorLogicLightType, ColorLogicPowerState, ColorLogicShow
-
 from homeassistant.components.light import ATTR_BRIGHTNESS, ATTR_EFFECT, ColorMode, LightEntity, LightEntityFeature
 from homeassistant.exceptions import HomeAssistantError
+from pyomnilogic_local.omnitypes import ColorLogicBrightness, ColorLogicLightType, ColorLogicPowerState, ColorLogicShow
 
 from .types.entity_index import EntityIndexColorLogicLight
 
@@ -35,7 +34,6 @@ def to_hass_level(level: ColorLogicBrightness) -> int:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the light platform."""
-
     coordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
 
     all_lights = get_entities_of_hass_type(coordinator.data, "light")
@@ -109,7 +107,6 @@ class OmniLogicLightEntity(OmniLogicEntity[EntityIndexColorLogicLight], LightEnt
 
         Example method how to request data updates.
         """
-
         # If the light is in either of these states, it will refuse to turn on, so we raise an error to the UI to let the user know
         if self.data.telemetry.state in [ColorLogicPowerState.POWERING_OFF, ColorLogicPowerState.COOLDOWN]:
             raise HomeAssistantError("Light must finish powering off before it can power back on.")
@@ -149,7 +146,6 @@ class OmniLogicLightEntity(OmniLogicEntity[EntityIndexColorLogicLight], LightEnt
 
         Example method how to request data updates.
         """
-
         _LOGGER.debug("turning off light ID: %s", self.system_id)
         was_on = self.is_on is True
         await self.coordinator.omni_api.async_set_equipment(self.bow_id, self.system_id, False)

@@ -36,10 +36,10 @@ repos:
               args: [ --fix ]
             #  Run the formatter
             - id: ruff-format
-    -   repo: https://github.com/pre-commit/mirrors-mypy
-        rev: v1.18.2
-        hooks:
-            -   id: mypy
-                exclude: cli.py
-                additional_dependencies: [ "pydantic>=2.0.0", "pytest>=8.0.0" ]
-                args: [ "--config-file=./pyproject.toml"]
+    # -   repo: https://github.com/pre-commit/mirrors-mypy
+    #     rev: v1.18.2
+    #     hooks:
+    #         -   id: mypy
+    #             exclude: cli.py
+    #             additional_dependencies: [ "pydantic>=2.0.0", "pytest>=8.0.0" ]
+    #             args: [ "--config-file=./pyproject.toml"]

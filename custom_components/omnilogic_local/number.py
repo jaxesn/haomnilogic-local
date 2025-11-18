@@ -4,6 +4,8 @@ import logging
 from math import floor
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
+from homeassistant.components.number import NumberDeviceClass, NumberEntity, NumberMode
+from homeassistant.const import PERCENTAGE, UnitOfTemperature
 from pyomnilogic_local.omnitypes import (
     BodyOfWaterType,
     ChlorinatorDispenserType,
@@ -16,12 +18,9 @@ from pyomnilogic_local.omnitypes import (
     PumpType,
 )
 
-from homeassistant.components.number import NumberDeviceClass, NumberEntity, NumberMode
-from homeassistant.const import PERCENTAGE, UnitOfTemperature
-
 from .const import DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
-from .types.entity_index import EntityIndexBodyOfWater, EntityIndexChlorinator, EntityIndexFilter, EntityIndexHeater, EntityIndexPump
+from .types.entity_index import EntityIndexChlorinator, EntityIndexFilter, EntityIndexHeater, EntityIndexPump
 from .utils import get_entities_of_hass_type, get_entities_of_omni_types
 
 if TYPE_CHECKING:
@@ -30,13 +29,13 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
     from .coordinator import OmniLogicCoordinator
+    from .types.entity_index import EntityIndexBodyOfWater
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the switch platform."""
-
     coordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
 
     filters_and_pumps = get_entities_of_omni_types(coordinator.data, [OmniType.FILTER, OmniType.PUMP])
@@ -76,7 +75,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     all_chlorinators = get_entities_of_omni_types(coordinator.data, [OmniType.CHLORINATOR])
 
     for system_id, chlor in all_chlorinators.items():
-        chlorinator = cast(EntityIndexChlorinator, chlor)
+        chlorinator = cast("EntityIndexChlorinator", chlor)
         match chlorinator.msp_config.dispenser_type:
             case ChlorinatorDispenserType.SALT:
                 match chlorinator.telemetry.operating_mode:
@@ -269,7 +268,7 @@ class OmniLogicChlorinatorTimedPercentNumberEntity(OmniLogicEntity[EntityIndexCh
         return self.data.telemetry.timed_percent
 
     async def async_set_native_value(self, value: float) -> None:
-        bow = cast(EntityIndexBodyOfWater, self.coordinator.data[self.bow_id])
+        bow = cast("EntityIndexBodyOfWater", self.coordinator.data[self.bow_id])
 
         # The bow_type parameter doesn't seem to matter to the omni_api, it works just leaving it always 0
         # we are going to set it correctly though just in case

@@ -2,20 +2,24 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
-from datetime import timedelta
 import logging
+from datetime import timedelta
+from typing import TYPE_CHECKING
 
 import async_timeout
-from pyomnilogic_local.api import OmniLogicAPI
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from pyomnilogic_local.exceptions import OmniTimeoutException
 from pyomnilogic_local.models.mspconfig import MSPConfig, OmniBase
 from pyomnilogic_local.models.telemetry import Telemetry
 
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-
 from .types.entity_index import EntityIndexData
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from homeassistant.core import HomeAssistant
+    from pyomnilogic_local.api import OmniLogicAPI
+
 
 # Import diagnostic data to reproduce issues
 SIMULATION = False
@@ -24,7 +28,7 @@ if SIMULATION:
 
     # This line is only used during development when simulating a pool with diagnostic data
     # Disable the pylint and mypy alerts that don't like it when this variable isn't defined
-    from .test_diagnostic_data import TEST_DIAGNOSTIC_DATA  # type: ignore # pylint: disable=no-name-in-module
+    from .test_diagnostic_data import TEST_DIAGNOSTIC_DATA
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,7 +71,6 @@ class OmniLogicCoordinator(DataUpdateCoordinator):
         This is the place to pre-process the data to lookup tables
         so entities can quickly look up their data.
         """
-
         try:
             # Note: asyncio.TimeoutError and aiohttp.ClientError are already
             # handled by the data update coordinator.

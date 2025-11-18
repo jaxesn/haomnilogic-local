@@ -3,20 +3,21 @@
 from __future__ import annotations
 
 import logging
-from typing import cast
+from typing import TYPE_CHECKING
 
-from pyomnilogic_local.api import OmniLogicAPI
-from pyomnilogic_local.omnitypes import OmniType
-
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_IP_ADDRESS, CONF_NAME, CONF_PORT, CONF_SCAN_INTERVAL, CONF_TIMEOUT, Platform
-from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
+from pyomnilogic_local.api import OmniLogicAPI
+from pyomnilogic_local.omnitypes import OmniType
 
 from .const import BACKYARD_SYSTEM_ID, DEFAULT_SCAN_INTERVAL, DOMAIN, KEY_COORDINATOR
 from .coordinator import OmniLogicCoordinator
 from .utils import get_entities_of_omni_types
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
 
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
@@ -33,7 +34,6 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up OmniLogic Local from a config entry."""
-
     # Create an API instance
     omni_api = OmniLogicAPI(entry.data[CONF_IP_ADDRESS], entry.data[CONF_PORT], entry.data[CONF_TIMEOUT])
 
@@ -88,12 +88,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
     # I think it is a bug that the await for async_unload_platforms above has a signature that indicates it returns a bool, yet unload_ok
     # is detected as "Any" by mypy
-    return cast(bool, unload_ok)
+    return unload_ok
 
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Migrate old entry."""
-
     _LOGGER.debug("Migrating from version %s", config_entry.version)
 
     if config_entry.version == 1:

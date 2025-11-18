@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
 import logging
 from typing import TYPE_CHECKING, Final, Literal, TypeVar
 
-from pyomnilogic_local.omnitypes import FilterState, FilterType, OmniType, PumpState, PumpType
-
 from homeassistant.components.button import ButtonEntity
+from pyomnilogic_local.omnitypes import FilterState, FilterType, OmniType, PumpState, PumpType
 
 from .const import BACKYARD_SYSTEM_ID, DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
@@ -14,6 +12,8 @@ from .types.entity_index import EntityIndexBackyard, EntityIndexFilter, EntityIn
 from .utils import get_entities_of_omni_types
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -28,7 +28,6 @@ SPEED_NAMES: Final[Sequence[SpeedT]] = ["low", "medium", "high"]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the switch platform."""
-
     coordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
 
     all_pumps = get_entities_of_omni_types(coordinator.data, [OmniType.FILTER, OmniType.PUMP])

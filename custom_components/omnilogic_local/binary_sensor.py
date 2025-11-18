@@ -3,10 +3,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, cast
 
-from pyomnilogic_local.models.telemetry import TelemetryBoW
-from pyomnilogic_local.omnitypes import BackyardState, CSADType, HeaterState, OmniType, SensorType
-
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
+from pyomnilogic_local.omnitypes import BackyardState, CSADType, HeaterState, OmniType, SensorType
 
 from .const import BACKYARD_SYSTEM_ID, DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
@@ -17,6 +15,7 @@ if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
+    from pyomnilogic_local.models.telemetry import TelemetryBoW
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,9 +23,8 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the switch platform."""
-
     coordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
-    entities = []
+    entities: list[BinarySensorEntity] = []
 
     # Create a binary sensor entity indicating if we are in Service Mode
     _LOGGER.debug("Configuring binary sensor for service mode with ID: %s", BACKYARD_SYSTEM_ID)
@@ -129,5 +127,5 @@ class OmniLogicFlowBinarySensorEntity(OmniLogicEntity[EntityIndexSensor], Binary
 
     @property
     def is_on(self) -> bool:
-        my_bow_telem = cast(TelemetryBoW, self.get_telemetry_by_systemid(self.data.msp_config.bow_id))
+        my_bow_telem = cast("TelemetryBoW", self.get_telemetry_by_systemid(self.data.msp_config.bow_id))
         return my_bow_telem.flow == 1

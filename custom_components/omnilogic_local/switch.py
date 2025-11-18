@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
-from pyomnilogic_local.models.telemetry import TelemetryFilter
+from homeassistant.components.switch import SwitchEntity
 from pyomnilogic_local.omnitypes import (
     BodyOfWaterType,
     FilterState,
@@ -15,8 +15,6 @@ from pyomnilogic_local.omnitypes import (
     RelayType,
     ValveActuatorState,
 )
-
-from homeassistant.components.switch import SwitchEntity
 
 from .const import DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
@@ -34,6 +32,7 @@ if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
+    from pyomnilogic_local.models.telemetry import TelemetryFilter
 
     from .coordinator import OmniLogicCoordinator
 
@@ -43,7 +42,6 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the switch platform."""
-
     entities = []
     coordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
     all_switches = get_entities_of_hass_type(coordinator.data, "switch")
@@ -331,7 +329,9 @@ class OmniLogicSpilloverSwitchEntity(OmniLogicEntity[EntityIndexBodyOfWater], Sw
 
     @property
     def is_on(self) -> bool | None:
-        return cast(TelemetryFilter, self.get_telemetry_by_systemid(self.filter_system_id)).valve_position == FilterValvePosition.SPILLOVER
+        return (
+            cast("TelemetryFilter", self.get_telemetry_by_systemid(self.filter_system_id)).valve_position == FilterValvePosition.SPILLOVER
+        )
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""

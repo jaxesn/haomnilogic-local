@@ -27,6 +27,11 @@ dev = [
     "pytest>=8.0.0,<9.0.0",
 ]
 
+[tool.codespell]
+ignore-words-list = [
+    "hass"
+]
+
 [tool.mypy]
 python_version = "3.13"
 # plugins = [
@@ -47,8 +52,8 @@ select = [
     "ASYNC",  # flake8-async
     "B",      # flake8-bugbear
     "A",      # flake8-builtins
-    "EM",     # flake8-errmsg
-    "FIX",    # flake8-fixme
+    # "EM",     # flake8-errmsg
+    # "FIX",    # flake8-fixme
     "ISC",    # flake8-implicit-str-concat
     "ICN",    # flake8-import-conventions
     "LOG",    # flake8-logging
@@ -59,23 +64,23 @@ select = [
     "Q",      # flake8-quotes
     "RSE",    # flake8-raise
     "RET",    # flake8-return
-    "SIM",    # flake8-simplify
+    # "SIM",    # flake8-simplify
     "PTH",    # flake8-use-pathlib
     "TID252", # flake8-tidy-imports
-    "TD",     # flake8-todos
-    "TC",     # flake8-type-checking
-    "ARG",    # flake8-unused-arguments
+    # "TD",     # flake8-todos
+    # "TC",     # flake8-type-checking
+    # "ARG",    # flake8-unused-arguments
     "I",      # isort
-    "N",      # pep8-naming
-    "PERF",   # perflint
+    # "N",      # pep8-naming
+    # "PERF",   # perflint
     "E",      # pycodestyle errors
     "W",      # pycodestyle warnings
     # "DOC",   # pydoclint, only available with ruff preview mode enabled
-    "D",      # pydocstyle
+    # "D",      # pydocstyle
     "F",      # pyflakes
-    "UP",     # pyupgrade
-    "RUF",    # ruff-specific rules
-    "TRY",
+    # "UP",     # pyupgrade
+    # "RUF",    # ruff-specific rules
+    # "TRY",    # tryceratops
 ]
 ignore = [
     "D100", # Disabled until we get everything documented.

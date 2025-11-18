@@ -3,30 +3,29 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Literal, cast
 
-from pyomnilogic_local.models.telemetry import TelemetryBoW
-from pyomnilogic_local.omnitypes import OmniType
-
 from homeassistant.components.water_heater import WaterHeaterEntity, WaterHeaterEntityFeature
 from homeassistant.const import ATTR_TEMPERATURE, STATE_OFF, STATE_ON, UnitOfTemperature
+from pyomnilogic_local.omnitypes import OmniType
 
 from .const import DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
-from .types.entity_index import EntityIndexHeater, EntityIndexHeaterEquip
+from .types.entity_index import EntityIndexHeater
 from .utils import get_entities_of_hass_type
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
+    from pyomnilogic_local.models.telemetry import TelemetryBoW
 
     from .coordinator import OmniLogicCoordinator
+    from .types.entity_index import EntityIndexHeaterEquip
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the water heater platform."""
-
     coordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
 
     all_heaters = get_entities_of_hass_type(coordinator.data, "water_heater")
@@ -97,7 +96,7 @@ class OmniLogicWaterHeaterEntity(OmniLogicEntity[EntityIndexHeater], WaterHeater
 
     @property
     def current_temperature(self) -> float | None:
-        current_temp = cast(TelemetryBoW, self.get_telemetry_by_systemid(self.bow_id)).water_temp
+        current_temp = cast("TelemetryBoW", self.get_telemetry_by_systemid(self.bow_id)).water_temp
         return current_temp if current_temp != -1 else None
 
     @property
@@ -132,7 +131,7 @@ class OmniLogicWaterHeaterEntity(OmniLogicEntity[EntityIndexHeater], WaterHeater
     def extra_state_attributes(self) -> dict[str, str | int]:
         extra_state_attributes = super().extra_state_attributes | {"solar_set_point": self.data.msp_config.solar_set_point}
         for system_id in self.heater_equipment_ids:
-            heater_equipment = cast(EntityIndexHeaterEquip, self.coordinator.data[system_id])
+            heater_equipment = cast("EntityIndexHeaterEquip", self.coordinator.data[system_id])
             prefix = f"omni_heater_{heater_equipment.msp_config.name.lower()}"
             extra_state_attributes = extra_state_attributes | {
                 f"{prefix}_enabled": heater_equipment.msp_config.enabled,

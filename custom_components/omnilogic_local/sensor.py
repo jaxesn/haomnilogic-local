@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from datetime import date, datetime
-from decimal import Decimal
 import logging
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, cast
 
-from pyomnilogic_local.omnitypes import ChlorinatorDispenserType, CSADType, FilterState, HeaterType, OmniType, SensorType, SensorUnits
-
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.const import CONCENTRATION_PARTS_PER_MILLION, UnitOfPower, UnitOfTemperature
-from homeassistant.helpers.typing import StateType
+from pyomnilogic_local.omnitypes import ChlorinatorDispenserType, CSADType, FilterState, HeaterType, OmniType, SensorType, SensorUnits
 
 from .const import BACKYARD_SYSTEM_ID, DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
@@ -25,9 +21,13 @@ from .types.entity_index import (
 from .utils import get_entities_of_hass_type, get_entities_of_omni_types
 
 if TYPE_CHECKING:
+    from datetime import date, datetime
+    from decimal import Decimal
+
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
+    from homeassistant.helpers.typing import StateType
 
     from .coordinator import OmniLogicCoordinator
 
@@ -36,7 +36,6 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the switch platform."""
-
     coordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
 
     # Create a sensor entity for all temperature sensors
@@ -118,7 +117,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     all_chlorinators = get_entities_of_omni_types(coordinator.data, [OmniType.CHLORINATOR])
     for system_id, chlorinator in all_chlorinators.items():
-        match cast(EntityIndexChlorinator, chlorinator).msp_config.dispenser_type:
+        match cast("EntityIndexChlorinator", chlorinator).msp_config.dispenser_type:
             case ChlorinatorDispenserType.SALT:
                 _LOGGER.debug(
                     "Configuring sensor for chlorinator salt level with ID: %s, Name: %s",
@@ -167,7 +166,7 @@ class OmniLogicTemperatureSensorEntity(OmniLogicEntity[EntityIndexSensor], Senso
 
     @property
     def sensed_data(self) -> T:
-        return cast(T, self.coordinator.data[self.sensed_system_id])
+        return cast("T", self.coordinator.data[self.sensed_system_id])
 
     @property
     def sensed_system_id(self) -> int:
