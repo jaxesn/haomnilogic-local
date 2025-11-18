@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING, Any, Generic, cast
 from homeassistant.core import callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from pyomnilogic_local.omnitypes import BackyardState, OmniType
+from pyomnilogic_local.omnitypes import BackyardState
 
-from .const import BACKYARD_SYSTEM_ID, MANUFACTURER
+from .const import BACKYARD_SYSTEM_ID, DOMAIN, MANUFACTURER
 from .types.entity_index import EntityIndexTypeVar
 
 if TYPE_CHECKING:
@@ -93,11 +93,13 @@ class OmniLogicEntity(CoordinatorEntity, Generic[EntityIndexTypeVar]):
     @property
     def device_info(self) -> DeviceInfo:
         """Return the device info."""
+        # Import DOMAIN here to avoid circular imports
+
         # If we have a BOW ID, then we associate with that BOWs device, if not, we associate with the Backyard
         if self.bow_id is not None:
-            identifiers = {(OmniType.BOW, self.bow_id)}
+            identifiers = {(DOMAIN, f"bow_{self.bow_id}")}
         else:
-            identifiers = {(OmniType.BACKYARD, BACKYARD_SYSTEM_ID)}
+            identifiers = {(DOMAIN, f"backyard_{BACKYARD_SYSTEM_ID}")}
         return DeviceInfo(
             identifiers=identifiers,
             manufacturer=MANUFACTURER,

@@ -54,7 +54,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("Creating device for backyard: %s", backyard)
     device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        identifiers={(OmniType.BACKYARD, BACKYARD_SYSTEM_ID)},
+        identifiers={(DOMAIN, f"backyard_{BACKYARD_SYSTEM_ID}")},
         manufacturer="Hayward",
         suggested_area="Back Yard",
         name=f"{entry.data[CONF_NAME]} {backyard.msp_config.name}",
@@ -65,7 +65,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.debug("Creating device for BOW: %s", bow)
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
-            identifiers={(OmniType.BOW, system_id)},
+            identifiers={(DOMAIN, f"bow_{system_id}")},
             manufacturer="Hayward",
             suggested_area="Back Yard",
             name=f"{entry.data[CONF_NAME]} {bow.msp_config.name}",
@@ -99,8 +99,48 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
         new = {**config_entry.data}
         new[CONF_SCAN_INTERVAL] = DEFAULT_SCAN_INTERVAL
 
-        config_entry.version = 2
-        hass.config_entries.async_update_entry(config_entry, data=new)
+        hass.config_entries.async_update_entry(config_entry, data=new, version=2)
+
+    if config_entry.version == 2:
+        # Migrate device identifiers from (OmniType, int) to (DOMAIN, str)
+        device_registry = dr.async_get(hass)
+
+        # Find all devices associated with this config entry
+        devices = dr.async_entries_for_config_entry(device_registry, config_entry.entry_id)
+
+        for device in devices:
+            # Look for old-style identifiers
+            old_identifiers = set()
+            new_identifiers = set()
+
+            for identifier in device.identifiers:
+                domain, value = identifier
+                # Check if this is an old-style identifier (domain is an OmniType enum value)
+                if domain in [OmniType.BACKYARD.value, OmniType.BOW.value]:
+                    old_identifiers.add(identifier)
+                    # Convert to new format
+                    if domain == OmniType.BACKYARD.value:
+                        new_identifiers.add((DOMAIN, f"backyard_{value}"))
+                    elif domain == OmniType.BOW.value:
+                        new_identifiers.add((DOMAIN, f"bow_{value}"))
+                else:
+                    # Keep other identifiers as-is
+                    new_identifiers.add(identifier)
+
+            # Update device if we found old identifiers
+            if old_identifiers:
+                _LOGGER.debug(
+                    "Migrating device %s identifiers from %s to %s",
+                    device.id,
+                    old_identifiers,
+                    new_identifiers,
+                )
+                device_registry.async_update_device(
+                    device.id,
+                    new_identifiers=new_identifiers,
+                )
+
+        hass.config_entries.async_update_entry(config_entry, version=3)
 
     _LOGGER.info("Migration to version %s successful", config_entry.version)
 
