@@ -8,12 +8,11 @@ from typing import TYPE_CHECKING
 from homeassistant.const import CONF_IP_ADDRESS, CONF_NAME, CONF_PORT, CONF_SCAN_INTERVAL, CONF_TIMEOUT, Platform
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
-from pyomnilogic_local.api import OmniLogicAPI
+from pyomnilogic_local import OmniLogic
 from pyomnilogic_local.omnitypes import OmniType
 
 from .const import BACKYARD_SYSTEM_ID, DEFAULT_SCAN_INTERVAL, DOMAIN, KEY_COORDINATOR
 from .coordinator import OmniLogicCoordinator
-from .utils import get_entities_of_omni_types
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -22,11 +21,11 @@ if TYPE_CHECKING:
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
     Platform.BUTTON,
-    Platform.LIGHT,
-    Platform.NUMBER,
-    Platform.SENSOR,
-    Platform.SWITCH,
-    Platform.WATER_HEATER,
+    # Platform.LIGHT,
+    # Platform.NUMBER,
+    # Platform.SENSOR,
+    # Platform.SWITCH,
+    # Platform.WATER_HEATER,
 ]
 
 _LOGGER = logging.getLogger(__name__)
@@ -35,40 +34,39 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up OmniLogic Local from a config entry."""
     # Create an API instance
-    omni_api = OmniLogicAPI(entry.data[CONF_IP_ADDRESS], entry.data[CONF_PORT], entry.data[CONF_TIMEOUT])
+    omni = OmniLogic(entry.data[CONF_IP_ADDRESS], entry.data[CONF_PORT], entry.data[CONF_TIMEOUT])
 
     # Validate that we can talk to the API endpoint
     try:
-        await omni_api.async_get_config()
+        await omni.refresh()
     except Exception as error:
         raise ConfigEntryNotReady from error
 
     # Create our data coordinator
-    coordinator = OmniLogicCoordinator(hass=hass, omni_api=omni_api, scan_interval=entry.data[CONF_SCAN_INTERVAL])
+    coordinator = OmniLogicCoordinator(hass=hass, omni=omni, scan_interval=entry.data[CONF_SCAN_INTERVAL])
     await coordinator.async_config_entry_first_refresh()
 
     device_registry = dr.async_get(hass)
 
     # Create a device for the Omni Backyard
-    backyard = get_entities_of_omni_types(coordinator.data, [OmniType.BACKYARD])[BACKYARD_SYSTEM_ID]
-    _LOGGER.debug("Creating device for backyard: %s", backyard)
+    _LOGGER.debug("Creating device for backyard: %s", omni.backyard)
     device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
         identifiers={(DOMAIN, f"backyard_{BACKYARD_SYSTEM_ID}")},
         manufacturer="Hayward",
         suggested_area="Back Yard",
-        name=f"{entry.data[CONF_NAME]} {backyard.msp_config.name}",
+        name=f"{entry.data[CONF_NAME]} {omni.backyard.name}",
     )
 
     # Create a device for each Body of Water
-    for system_id, bow in get_entities_of_omni_types(coordinator.data, [OmniType.BOW]).items():
+    for bow in omni.backyard.bow:
         _LOGGER.debug("Creating device for BOW: %s", bow)
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
-            identifiers={(DOMAIN, f"bow_{system_id}")},
+            identifiers={(DOMAIN, f"bow_{bow.system_id}")},
             manufacturer="Hayward",
             suggested_area="Back Yard",
-            name=f"{entry.data[CONF_NAME]} {bow.msp_config.name}",
+            name=f"{entry.data[CONF_NAME]} {bow.name}",
         )
 
     # Store them for use later

@@ -11,8 +11,7 @@ authors = [
 ]
 license-files = ["LICENSE"]
 dependencies = [
-    "homeassistant>=2024.6.0",
-    "python-omnilogic-local>=0.20.3",
+    "python-omnilogic-local>=0.20.7",
 ]
 
 [project.urls]
@@ -23,8 +22,10 @@ repository = "https://github.com/cryptk/haomnilogic-local"
 dev = [
     "pre-commit>=4.0.0,<5.0.0",
     "mypy>=1.18.2,<2.0.0",
-    "homeassistant",
+    "homeassistant>=2024.6.0",
     "pytest>=8.0.0,<9.0.0",
+    "pytest-asyncio>=1.2.0,<2.0.0",
+    "pytest-cov>=7.0.0,<8.0.0",
 ]
 
 [tool.codespell]
@@ -37,11 +38,9 @@ python_version = "3.13"
 # plugins = [
 #     "pydantic.mypy"
 # ]
-follow_imports = "silent"
+follow_imports = "normal"
 strict = true
-ignore_missing_imports = true
-disallow_subclassing_any = false
-warn_return_any = false
+# warn_return_any = false
 
 [tool.ruff]
 line-length = 140
@@ -100,3 +99,6 @@ voluptuous = "vol"
 "homeassistant.helpers.device_registry" = "dr"
 "homeassistant.helpers.entity_registry" = "er"
 "homeassistant.helpers.issue_registry" = "ir"
+
+[tool.uv.sources]
+python-omnilogic-local = { path = "../python-omnilogic-local", editable = true }
