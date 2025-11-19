@@ -11,7 +11,7 @@ authors = [
 ]
 license-files = ["LICENSE"]
 dependencies = [
-    "python-omnilogic-local>=0.20.7",
+    "python-omnilogic-local>=0.20.8",
 ]
 
 [project.urls]

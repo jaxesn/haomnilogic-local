@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from typing import Any, Generic, TypeVar, cast
 
 from homeassistant.core import callback
@@ -111,3 +112,11 @@ class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[Equipment
     @property
     def unique_id(self) -> str | None:
         return f"{self.bow_id} {self.system_id} {self.name}"
+
+    # @callback
+    async def _schedule_refresh_callback(self, now: datetime) -> None:
+        """Callback function executed by async_call_later."""
+        # `now` is the timestamp argument required by async_call_later callbacks
+
+        # Use the non-blocking version of the refresh request
+        await self.coordinator.async_request_refresh()

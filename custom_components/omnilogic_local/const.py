@@ -9,6 +9,7 @@ KEY_COORDINATOR: Final[str] = "coordinator"
 
 DEFAULT_SCAN_INTERVAL: Final[int] = 10
 MIN_SCAN_INTERVAL: Final[int] = 5
+UPDATE_DELAY_SECONDS: Final[float] = 1.5
 
 # According to Hayward docs, the backyard always has a system id of 0
 BACKYARD_SYSTEM_ID: Final[int] = 0

@@ -56,4 +56,7 @@ class OmniLogicCoordinator(DataUpdateCoordinator[None]):
             update_interval=timedelta(seconds=scan_interval),
         )
         self.omni = omni
-        self.update_method = self.omni.refresh
+
+    async def _async_update_data(self) -> None:
+        """Update data via library."""
+        await self.omni.refresh(force=True)
