@@ -207,7 +207,6 @@ class OmniLogicAirTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Entit
 class OmniLogicWaterTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[EntityIndexBodyOfWater]):
     def __init__(self, coordinator: OmniLogicCoordinator, context: int) -> None:
         super().__init__(coordinator, context, OmniType.BOW)
-        self._sensed_system_id = self.bow_id
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
