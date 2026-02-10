@@ -8,12 +8,15 @@ from typing import TYPE_CHECKING
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from pyomnilogic_local.models.mspconfig import MSPConfig, OmniBase
+from pyomnilogic_local.omnitypes import OmniType
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from homeassistant.core import HomeAssistant
     from pyomnilogic_local import OmniLogic
+
+    from .types.entity_index import EntityIndexT
 
 
 # Import diagnostic data to reproduce issues
@@ -26,24 +29,32 @@ if SIMULATION:
 _LOGGER = logging.getLogger(__name__)
 
 
-def device_walk(base: OmniBase | MSPConfig) -> Iterable[OmniBase]:
+def device_walk(base: OmniBase | MSPConfig, bow_id: int = -1) -> Iterable[OmniBase]:
     for _key, value in base:
         if isinstance(value, OmniBase) and hasattr(value, "system_id"):
-            yield value.without_subdevices()
-            yield from device_walk(value)
+            device = value.without_subdevices()
+            if bow_id != -1 and getattr(device, "bow_id", -1) == -1:
+                device.bow_id = bow_id
+            yield device
+
+            child_bow_id = value.system_id if value.omni_type == OmniType.BOW else bow_id
+            yield from device_walk(value, child_bow_id)
         if isinstance(value, list):
-            for device in [d for d in value if hasattr(d, "system_id")]:
-                yield device.without_subdevices()
-                yield from device_walk(device)
+            for item in value:
+                if isinstance(item, OmniBase) and hasattr(item, "system_id"):
+                    device = item.without_subdevices()
+                    if bow_id != -1 and getattr(device, "bow_id", -1) == -1:
+                        device.bow_id = bow_id
+                    yield device
+
+                    child_bow_id = item.system_id if item.omni_type == OmniType.BOW else bow_id
+                    yield from device_walk(item, child_bow_id)
 
 
-class OmniLogicCoordinator(DataUpdateCoordinator[None]):
+class OmniLogicCoordinator(DataUpdateCoordinator["EntityIndexT"]):
     """Hayward OmniLogic API coordinator."""
 
     omni: OmniLogic
-    # The underlying library stores all of the data and abstracts it via an access layer
-    # We don't need to store the data inside of the
-    data: None
 
     def __init__(self, hass: HomeAssistant, omni: OmniLogic, scan_interval: int) -> None:
         """Initialize my coordinator."""
@@ -57,6 +68,16 @@ class OmniLogicCoordinator(DataUpdateCoordinator[None]):
         )
         self.omni = omni
 
-    async def _async_update_data(self) -> None:
+    async def _async_update_data(self) -> EntityIndexT:
         """Update data via library."""
         await self.omni.refresh(force=True)
+
+        from .types.entity_index import EntityIndexData
+
+        entities: EntityIndexT = {}
+        for device in device_walk(self.omni.mspconfig):
+            entities[device.system_id] = EntityIndexData(
+                msp_config=device,
+                telemetry=self.omni.telemetry.get_telem_by_systemid(device.system_id),
+            )
+        return entities

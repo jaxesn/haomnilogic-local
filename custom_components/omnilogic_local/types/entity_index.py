@@ -34,6 +34,22 @@ from pyomnilogic_local.models.telemetry import (
 )
 
 
+TelemetryTypes = (
+    TelemetryBackyard
+    | TelemetryBoW
+    | TelemetryChlorinator
+    | TelemetryColorLogicLight
+    | TelemetryFilter
+    | TelemetryGroup
+    | TelemetryHeater
+    | TelemetryPump
+    | TelemetryRelay
+    | TelemetryValveActuator
+    | TelemetryVirtualHeater
+    | TelemetryCSAD
+)
+
+
 @dataclass
 class EntityIndexData:
     msp_config: (
@@ -50,20 +66,7 @@ class EntityIndexData:
         | MSPChlorinatorEquip
         | MSPCSAD
     )
-    telemetry: (
-        TelemetryBackyard
-        | TelemetryBoW
-        | TelemetryChlorinator
-        | TelemetryColorLogicLight
-        | TelemetryFilter
-        | TelemetryGroup
-        | TelemetryHeater
-        | TelemetryPump
-        | TelemetryRelay
-        | TelemetryValveActuator
-        | TelemetryVirtualHeater
-        | TelemetryCSAD
-    )
+    telemetry: TelemetryTypes | None
 
 
 EntityIndexT = dict[int, EntityIndexData]

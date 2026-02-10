@@ -25,8 +25,12 @@ from pyomnilogic_local import (
     Sensor,
 )
 
+from pyomnilogic_local.models.mspconfig import MSPConfig
 from .const import BACKYARD_SYSTEM_ID, DOMAIN, MANUFACTURER
 from .coordinator import OmniLogicCoordinator
+from .types.entity_index import EntityIndexData, EntityIndexT, TelemetryTypes
+
+T = TypeVar("T", bound=EntityIndexData)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,21 +63,68 @@ class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[Equipment
     def __init__(
         self,
         coordinator: OmniLogicCoordinator,
-        equipment: EquipmentTypes,
+        equipment: EquipmentTypes | int,
     ) -> None:
+        """Initialize the entity."""
         super().__init__(coordinator=coordinator)
-        self.equipment = equipment
-        self.bow_id = equipment.bow_id
-        self.system_id = equipment.system_id
+        if isinstance(equipment, int):
+            self.system_id = equipment
+            self.equipment = cast("EquipmentTypes", self.coordinator.omni.get_equipment_by_id(self.system_id))
+        else:
+            self.equipment = equipment
+            self.system_id = equipment.system_id
+
+        if self.equipment is not None:
+            self.bow_id = self.equipment.bow_id if self.equipment.bow_id is not None else -1
+        else:
+            # If the equipment isn't found in the library collections yet, we can fall back to the coordinator data
+            try:
+                self.bow_id = self.coordinator.data[self.system_id].msp_config.bow_id
+                if self.bow_id is None:
+                    self.bow_id = -1
+            except (KeyError, AttributeError):
+                self.bow_id = -1
+
+        self._extra_state_attributes: dict[str, Any] = {}
         subclass_name = self.__class__.__name__
-        _LOGGER.debug("Configuring %s for %s - SystemID: %s, Name: %s", subclass_name, equipment.omni_type, self.system_id, equipment.name)
+        equipment_name = self.equipment.name if self.equipment else "Unknown"
+        omni_type = self.equipment.omni_type if self.equipment else "Unknown"
+        _LOGGER.debug("Configuring %s for %s - SystemID: %s, Name: %s", subclass_name, omni_type, self.system_id, equipment_name)
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
+        # When we handle an update from the coordinator, we want to update the equipment object which we are holding a reference to
+        # as it is the most current data from the library.
         if self.system_id is not None:
             _LOGGER.debug("updating %s - %s: %s", self.system_id, self.equipment.name, self.equipment)
-            self.equipment = cast("EquipmentTypes", self.coordinator.omni.get_equipment_by_id(self.system_id))
+            # self.equipment = cast("EquipmentTypes", self.coordinator.omni.get_equipment_by_id(self.system_id))
+        self.async_write_ha_state()
+
+    @property
+    def data(self) -> T:
+        """Returns the data for this entity from the coordinator."""
+        return cast("T", self.coordinator.data[self.system_id])
+
+    def get_system_config(self) -> MSPConfig:
+        """Returns the system config for the coordinator."""
+        return self.coordinator.omni.mspconfig
+
+    def get_telemetry_by_systemid(self, system_id: int) -> TelemetryTypes | None:
+        """Returns the telemetry for a specific system ID."""
+        return self.coordinator.omni.telemetry.get_telem_by_systemid(system_id)
+
+    def set_telemetry(self, telemetry: dict[str, Any]) -> None:
+        """Updates the telemetry for this entity in the coordinator data."""
+        # This is a bit of a hack to update the local state before the next refresh
+        for key, value in telemetry.items():
+            setattr(self.data.telemetry, key, value)
+        self.async_write_ha_state()
+
+    def set_config(self, config: dict[str, Any]) -> None:
+        """Updates the config for this entity in the coordinator data."""
+        for key, value in config.items():
+            setattr(self.data.msp_config, key, value)
         self.async_write_ha_state()
 
     @property
@@ -92,10 +143,6 @@ class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[Equipment
             identifiers=identifiers,
             manufacturer=MANUFACTURER,
         )
-
-    @property
-    def _extra_state_attributes(self) -> dict[str, Any]:
-        return {}
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
