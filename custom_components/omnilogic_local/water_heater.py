@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 
 from homeassistant.components.water_heater import WaterHeaterEntity, WaterHeaterEntityFeature
 from homeassistant.const import ATTR_TEMPERATURE, STATE_OFF, STATE_ON, UnitOfTemperature
-from pyomnilogic_local import Heater, OmniType
+from pyomnilogic_local import Heater
+from pyomnilogic_local.omnitypes import OmniType
 
 from .const import DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
