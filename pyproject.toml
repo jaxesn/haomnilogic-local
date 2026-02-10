@@ -11,7 +11,7 @@ authors = [
 ]
 license-files = ["LICENSE"]
 dependencies = [
-    "python-omnilogic-local>=0.20.8",
+    "python-omnilogic-local[cli]>=0.20.8",
 ]
 
 [project.urls]
@@ -101,4 +101,4 @@ voluptuous = "vol"
 "homeassistant.helpers.issue_registry" = "ir"
 
 [tool.uv.sources]
-python-omnilogic-local = { path = "../python-omnilogic-local", editable = true }
+python-omnilogic-local = { git = "https://github.com/jaxesn/python-omnilogic-local", rev = "93a23c3" }
