@@ -10,7 +10,7 @@ from pyomnilogic_local.omnitypes import ChlorinatorDispenserType, CSADType, Filt
 
 from .const import BACKYARD_SYSTEM_ID, DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
-from .types.entity_index import (
+from .models.entity_index import (
     EntityIndexBackyard,
     EntityIndexBodyOfWater,
     EntityIndexChlorinator,

@@ -10,7 +10,7 @@ from pyomnilogic_local.omnitypes import FilterSpeedPresets, FilterType, PumpSpee
 
 from .const import DOMAIN, KEY_COORDINATOR, UPDATE_DELAY_SECONDS
 from .entity import OmniLogicEntity
-from .types.entity_index import EntityIndexBackyard, EntityIndexFilter, EntityIndexPump
+from .models.entity_index import EntityIndexBackyard, EntityIndexFilter, EntityIndexPump
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry

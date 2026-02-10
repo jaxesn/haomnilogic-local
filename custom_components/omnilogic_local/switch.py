@@ -19,7 +19,7 @@ from pyomnilogic_local.omnitypes import (
 
 from .const import DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
-from .types.entity_index import (
+from .models.entity_index import (
     EntityIndexBodyOfWater,
     EntityIndexChlorinator,
     EntityIndexFilter,

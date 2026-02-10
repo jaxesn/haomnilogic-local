@@ -21,7 +21,7 @@ from pyomnilogic_local.omnitypes import (
 
 from .const import DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
-from .types.entity_index import EntityIndexChlorinator, EntityIndexFilter, EntityIndexHeater, EntityIndexPump
+from .models.entity_index import EntityIndexChlorinator, EntityIndexFilter, EntityIndexHeater, EntityIndexPump
 from .utils import get_entities_of_hass_type, get_entities_of_omni_types
 
 if TYPE_CHECKING:
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
     from .coordinator import OmniLogicCoordinator
-    from .types.entity_index import EntityIndexBodyOfWater
+    from .models.entity_index import EntityIndexBodyOfWater
 
 _LOGGER = logging.getLogger(__name__)
 

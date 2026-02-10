@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 from .const import DOMAIN, KEY_COORDINATOR, UPDATE_DELAY_SECONDS
 from .entity import OmniLogicEntity
-from .types.entity_index import EntityIndexColorLogicLight
+from .models.entity_index import EntityIndexColorLogicLight
 
 _LOGGER = logging.getLogger(__name__)
 

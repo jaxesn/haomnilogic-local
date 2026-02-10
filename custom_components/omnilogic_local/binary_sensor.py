@@ -9,7 +9,7 @@ from pyomnilogic_local import Backyard, Bow, HeaterEquipment
 from .const import DOMAIN, KEY_COORDINATOR
 from .coordinator import OmniLogicCoordinator
 from .entity import OmniLogicEntity
-from .types.entity_index import EntityIndexBackyard, EntityIndexBodyOfWater, EntityIndexHeaterEquip
+from .models.entity_index import EntityIndexBackyard, EntityIndexBodyOfWater, EntityIndexHeaterEquip
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry

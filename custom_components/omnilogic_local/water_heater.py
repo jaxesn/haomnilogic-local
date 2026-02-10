@@ -9,7 +9,7 @@ from pyomnilogic_local import Heater, OmniType
 
 from .const import DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
-from .types.entity_index import EntityIndexHeater
+from .models.entity_index import EntityIndexHeater
 from .utils import get_entities_of_hass_type
 
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from pyomnilogic_local.models.telemetry import TelemetryBoW
 
     from .coordinator import OmniLogicCoordinator
-    from .types.entity_index import EntityIndexHeaterEquip
+    from .models.entity_index import EntityIndexHeaterEquip
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -22,10 +22,10 @@ PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
     Platform.BUTTON,
     Platform.LIGHT,
-    # Platform.NUMBER,
-    # Platform.SENSOR,
-    # Platform.SWITCH,
-    # Platform.WATER_HEATER,
+    Platform.NUMBER,
+    Platform.SENSOR,
+    Platform.SWITCH,
+    Platform.WATER_HEATER,
 ]
 
 _LOGGER = logging.getLogger(__name__)

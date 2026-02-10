@@ -10,7 +10,7 @@ from .const import OMNI_TO_HASS_TYPES
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-    from .types.entity_index import EntityIndexT
+    from .models.entity_index import EntityIndexT
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,6 +22,13 @@ def device_walk(base: OmniBase | MSPConfig, bow_id: int = -1) -> Iterable[OmniBa
             device = value.without_subdevices()
             if bow_id != -1 and getattr(device, "bow_id", -1) == -1:
                 device.bow_id = bow_id
+            _LOGGER.debug(
+                "device_walk found device: %s (Type: %s, SystemID: %s, BOW ID: %s)",
+                device.name if hasattr(device, "name") else "Unnamed",
+                device.omni_type,
+                device.system_id,
+                device.bow_id,
+            )
             yield device
 
             child_bow_id = value.system_id if value.omni_type == OmniType.BOW else bow_id
@@ -32,6 +39,13 @@ def device_walk(base: OmniBase | MSPConfig, bow_id: int = -1) -> Iterable[OmniBa
                     device = item.without_subdevices()
                     if bow_id != -1 and getattr(device, "bow_id", -1) == -1:
                         device.bow_id = bow_id
+                    _LOGGER.debug(
+                        "device_walk found device from list: %s (Type: %s, SystemID: %s, BOW ID: %s)",
+                        device.name if hasattr(device, "name") else "Unnamed",
+                        device.omni_type,
+                        device.system_id,
+                        device.bow_id,
+                    )
                     yield device
 
                     child_bow_id = item.system_id if item.omni_type == OmniType.BOW else bow_id

@@ -28,7 +28,7 @@ from pyomnilogic_local import (
 from pyomnilogic_local.models.mspconfig import MSPConfig
 from .const import BACKYARD_SYSTEM_ID, DOMAIN, MANUFACTURER
 from .coordinator import OmniLogicCoordinator
-from .types.entity_index import EntityIndexData, EntityIndexT, TelemetryTypes
+from .models.entity_index import EntityIndexData, EntityIndexT, TelemetryTypes
 
 T = TypeVar("T", bound=EntityIndexData)
 

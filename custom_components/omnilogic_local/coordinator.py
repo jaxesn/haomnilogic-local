@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from pyomnilogic_local import OmniLogic
 
-    from .types.entity_index import EntityIndexT
+    from .models.entity_index import EntityIndexT
 
 
 # Import diagnostic data to reproduce issues
@@ -48,7 +48,7 @@ class OmniLogicCoordinator(DataUpdateCoordinator["EntityIndexT"]):
         """Update data via library."""
         await self.omni.refresh(force=True)
 
-        from .types.entity_index import EntityIndexData
+        from .models.entity_index import EntityIndexData
 
         entities: EntityIndexT = {}
         for device in device_walk(self.omni.mspconfig):
