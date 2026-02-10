@@ -56,7 +56,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                     switch.msp_config.system_id,
                     switch.msp_config.name,
                 )
-                match switch.msp_config.type:
+                match switch.msp_config.equip_type:
                     case RelayType.VALVE_ACTUATOR:
                         entities.append(OmniLogicRelayValveActuatorSwitchEntity(coordinator=coordinator, context=system_id))
                     case RelayType.HIGH_VOLTAGE:
@@ -86,7 +86,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     # Add switches for spillover into pools if supported
     all_bows = get_entities_of_omni_types(coordinator.data, [OmniType.BOW])
     for system_id, bow in all_bows.items():
-        match bow.msp_config.type:
+        match bow.msp_config.equip_type:
             case BodyOfWaterType.POOL:
                 if bow.msp_config.supports_spillover == "yes":
                     _LOGGER.debug(

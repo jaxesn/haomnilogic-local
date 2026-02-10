@@ -49,7 +49,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             pump.msp_config.system_id,
             pump.msp_config.name,
         )
-        match pump.msp_config.type:
+        match pump.msp_config.equip_type:
             case PumpType.VARIABLE_SPEED:
                 entities.append(OmniLogicPumpNumberEntity(coordinator=coordinator, context=system_id))
             case FilterType.VARIABLE_SPEED:
@@ -276,7 +276,7 @@ class OmniLogicChlorinatorTimedPercentNumberEntity(OmniLogicEntity[Chlorinator, 
         # The bow_type parameter doesn't seem to matter to the omni_api, it works just leaving it always 0
         # we are going to set it correctly though just in case
         bow_type: int = 0
-        match bow.msp_config.type:
+        match bow.msp_config.equip_type:
             case BodyOfWaterType.POOL:
                 bow_type = 0
             case BodyOfWaterType.SPA:

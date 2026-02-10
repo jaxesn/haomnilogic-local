@@ -102,7 +102,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                     "Your system has an unsupported sensor. ID: %s, Name: %s, Type: %s. Please raise an issue: https://github.com/cryptk/haomnilogic-local/issues",
                     sensor.msp_config.system_id,
                     sensor.msp_config.name,
-                    sensor.msp_config.type,
+                    sensor.msp_config.equip_type,
                 )
 
     # Create energy sensors for filters/pumps suitable for inclusion in the energy dashboard

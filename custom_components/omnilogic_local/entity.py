@@ -63,16 +63,16 @@ class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[Equipment
     def __init__(
         self,
         coordinator: OmniLogicCoordinator,
-        equipment: EquipmentTypes | int,
+        context: EquipmentTypes | int,
     ) -> None:
         """Initialize the entity."""
-        super().__init__(coordinator=coordinator)
-        if isinstance(equipment, int):
-            self.system_id = equipment
+        super().__init__(coordinator=coordinator, context=context if isinstance(context, int) else context.system_id)
+        if isinstance(context, int):
+            self.system_id = context
             self.equipment = cast("EquipmentTypes", self.coordinator.omni.get_equipment_by_id(self.system_id))
         else:
-            self.equipment = equipment
-            self.system_id = equipment.system_id
+            self.equipment = context
+            self.system_id = context.system_id
 
         if self.equipment is not None:
             self.bow_id = self.equipment.bow_id if self.equipment.bow_id is not None else -1
