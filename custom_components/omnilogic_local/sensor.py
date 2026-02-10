@@ -42,7 +42,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     all_sensors = get_entities_of_hass_type(coordinator.data, "sensor")
     entities = []
     for system_id, sensor in all_sensors.items():
-        match sensor.msp_config.type:
+        match sensor.msp_config.equip_type:
             case SensorType.AIR_TEMP:
                 _LOGGER.debug(
                     "Configuring sensor for air temperature with ID: %s, Name: %s",
@@ -170,9 +170,13 @@ class OmniLogicTemperatureSensorEntity(OmniLogicEntity[EntityIndexSensor], Senso
 
     @property
     def sensed_system_id(self) -> int:
-        if self._sensed_system_id is not None:
+        if self._sensed_system_id is not None and self._sensed_system_id != -1:
             return self._sensed_system_id
-        raise NotImplementedError
+        if self.bow_id is not None and self.bow_id != -1:
+            return self.bow_id
+        raise NotImplementedError(
+            f"Unable to determine sensed_system_id for {self.entity_id}: _sensed_system_id={self._sensed_system_id}, bow_id={self.bow_id}"
+        )
 
     @property
     def native_unit_of_measurement(self) -> str | None:
