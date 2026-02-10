@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 
 from homeassistant.components.water_heater import WaterHeaterEntity, WaterHeaterEntityFeature
 from homeassistant.const import ATTR_TEMPERATURE, STATE_OFF, STATE_ON, UnitOfTemperature
-from pyomnilogic_local.omnitypes import OmniType
+from pyomnilogic_local import Heater, OmniType
 
 from .const import DOMAIN, KEY_COORDINATOR
 from .entity import OmniLogicEntity
@@ -51,7 +51,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     async_add_entities(entities)
 
 
-class OmniLogicWaterHeaterEntity(OmniLogicEntity[EntityIndexHeater], WaterHeaterEntity):
+class OmniLogicWaterHeaterEntity(OmniLogicEntity[Heater, EntityIndexHeater], WaterHeaterEntity):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:

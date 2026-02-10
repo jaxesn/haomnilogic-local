@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
 from .const import DOMAIN, KEY_COORDINATOR, UPDATE_DELAY_SECONDS
 from .entity import OmniLogicEntity
+from .types.entity_index import EntityIndexColorLogicLight
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     async_add_entities(entities)
 
 
-class OmniLogicLightEntity(OmniLogicEntity[ColorLogicLight], LightEntity):
+class OmniLogicLightEntity(OmniLogicEntity[ColorLogicLight, EntityIndexColorLogicLight], LightEntity):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:

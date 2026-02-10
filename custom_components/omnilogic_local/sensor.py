@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, cast
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.const import CONCENTRATION_PARTS_PER_MILLION, UnitOfPower, UnitOfTemperature
+from pyomnilogic_local import CSAD, Chlorinator, Filter, Sensor
 from pyomnilogic_local.omnitypes import ChlorinatorDispenserType, CSADType, FilterState, HeaterType, OmniType, SensorType, SensorUnits
 
 from .const import BACKYARD_SYSTEM_ID, DOMAIN, KEY_COORDINATOR
@@ -93,7 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                     sensor.msp_config.system_id,
                     sensor.msp_config.name,
                 )
-                entities.append(OmniLogicCSADAcidPhEntity(coordinator=coordinator, context=system_id))
+                entities.append(OmniLogicCSADSensorEntity(coordinator=coordinator, context=system_id))
                 entities.append(OmniLogicCSADAcidORPEntity(coordinator=coordinator, context=system_id))
             case _:
                 _LOGGER.warning(
@@ -144,7 +145,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 T = TypeVar("T", EntityIndexBackyard, EntityIndexBodyOfWater, EntityIndexHeaterEquip)
 
 
-class OmniLogicTemperatureSensorEntity(OmniLogicEntity[EntityIndexSensor], SensorEntity, Generic[T]):
+class OmniLogicTemperatureSensorEntity(OmniLogicEntity[Sensor, EntityIndexSensor], SensorEntity, Generic[T]):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:
@@ -225,7 +226,7 @@ class OmniLogicSolarTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Ent
         return temp if temp not in [-1, 255, 65535] else None
 
 
-class OmniLogicFilterEnergySensorEntity(OmniLogicEntity[EntityIndexFilter], SensorEntity):
+class OmniLogicFilterEnergySensorEntity(OmniLogicEntity[Filter, EntityIndexFilter], SensorEntity):
     _attr_device_class = SensorDeviceClass.POWER
     _attr_native_unit_of_measurement = UnitOfPower.WATT
     _attr_state_class = SensorStateClass.MEASUREMENT
@@ -251,7 +252,7 @@ class OmniLogicFilterEnergySensorEntity(OmniLogicEntity[EntityIndexFilter], Sens
         return f"{self.data.msp_config.name} Power"
 
 
-class OmniLogicChlorinatorSaltLevelSensorEntity(OmniLogicEntity[EntityIndexChlorinator], SensorEntity):
+class OmniLogicChlorinatorSaltLevelSensorEntity(OmniLogicEntity[Chlorinator, EntityIndexChlorinator], SensorEntity):
     _attr_native_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
     _attr_state_class = SensorStateClass.MEASUREMENT
     _sensor_type: Literal["average", "instant"]
@@ -273,7 +274,7 @@ class OmniLogicChlorinatorSaltLevelSensorEntity(OmniLogicEntity[EntityIndexChlor
         return f"{self.data.msp_config.name} {self._sensor_type.capitalize()} Salt Level"
 
 
-class OmniLogicCSADAcidPhEntity(OmniLogicEntity[EntityIndexCSAD], SensorEntity):
+class OmniLogicCSADSensorEntity(OmniLogicEntity[CSAD, EntityIndexCSAD], SensorEntity):
     _attr_device_class = SensorDeviceClass.PH
     _attr_state_class = SensorStateClass.MEASUREMENT
 
@@ -297,7 +298,7 @@ class OmniLogicCSADAcidPhEntity(OmniLogicEntity[EntityIndexCSAD], SensorEntity):
         }
 
 
-class OmniLogicCSADAcidORPEntity(OmniLogicEntity[EntityIndexCSAD], SensorEntity):
+class OmniLogicCSADAcidORPEntity(OmniLogicEntity[CSAD, EntityIndexCSAD], SensorEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_name = "ORP"
 

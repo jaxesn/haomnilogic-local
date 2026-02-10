@@ -9,6 +9,7 @@ from pyomnilogic_local import Backyard, Bow, HeaterEquipment
 from .const import DOMAIN, KEY_COORDINATOR
 from .coordinator import OmniLogicCoordinator
 from .entity import OmniLogicEntity
+from .types.entity_index import EntityIndexBackyard, EntityIndexBodyOfWater, EntityIndexHeaterEquip
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -49,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     async_add_entities(entities)
 
 
-class OmniLogicServiceModeBinarySensorEntity(OmniLogicEntity[Backyard], BinarySensorEntity):
+class OmniLogicServiceModeBinarySensorEntity(OmniLogicEntity[Backyard, EntityIndexBackyard], BinarySensorEntity):
     _attr_name = "Service Mode"
 
     @property
@@ -62,7 +63,7 @@ class OmniLogicServiceModeBinarySensorEntity(OmniLogicEntity[Backyard], BinarySe
         return self.equipment.is_ready
 
 
-class OmniLogicHeaterEquipBinarySensorEntity(OmniLogicEntity[HeaterEquipment], BinarySensorEntity):
+class OmniLogicHeaterEquipBinarySensorEntity(OmniLogicEntity[HeaterEquipment, EntityIndexHeaterEquip], BinarySensorEntity):
     """Expose a binary state via a sensor based on telemetry data."""
 
     device_class = BinarySensorDeviceClass.HEAT
@@ -80,7 +81,7 @@ class OmniLogicHeaterEquipBinarySensorEntity(OmniLogicEntity[HeaterEquipment], B
         return self.equipment.is_on
 
 
-class OmniLogicFlowBinarySensorEntity(OmniLogicEntity[Bow], BinarySensorEntity):
+class OmniLogicFlowBinarySensorEntity(OmniLogicEntity[Bow, EntityIndexBodyOfWater], BinarySensorEntity):
     """Expose a binary state via a sensor based on telemetry data."""
 
     @property

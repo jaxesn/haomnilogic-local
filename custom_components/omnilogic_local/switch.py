@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from homeassistant.components.switch import SwitchEntity
+from pyomnilogic_local import Bow, Chlorinator, Filter, Pump, Relay
 from pyomnilogic_local.omnitypes import (
     BodyOfWaterType,
     FilterState,
@@ -100,7 +101,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 T = TypeVar("T", EntityIndexRelay, EntityIndexFilter, EntityIndexPump, EntityIndexValveActuator)
 
 
-class OmniLogicSwitchEntity(OmniLogicEntity[T], SwitchEntity):
+class OmniLogicSwitchEntity(OmniLogicEntity[Any, T], SwitchEntity, Generic[T]):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:
@@ -130,7 +131,9 @@ class OmniLogicSwitchEntity(OmniLogicEntity[T], SwitchEntity):
         return self.data.telemetry.state == self.telem_value_state.ON
 
 
-class OmniLogicRelayValveActuatorSwitchEntity(OmniLogicSwitchEntity[EntityIndexValveActuator]):
+class OmniLogicRelayValveActuatorSwitchEntity(
+    OmniLogicSwitchEntity[EntityIndexValveActuator], OmniLogicEntity[Relay, EntityIndexValveActuator]
+):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:
@@ -170,7 +173,7 @@ class OmniLogicRelayValveActuatorSwitchEntity(OmniLogicSwitchEntity[EntityIndexV
         }
 
 
-class OmniLogicRelayHighVoltageSwitchEntity(OmniLogicSwitchEntity[EntityIndexRelay]):
+class OmniLogicRelayHighVoltageSwitchEntity(OmniLogicSwitchEntity[EntityIndexRelay], OmniLogicEntity[Relay, EntityIndexRelay]):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:
@@ -188,7 +191,7 @@ class OmniLogicRelayHighVoltageSwitchEntity(OmniLogicSwitchEntity[EntityIndexRel
         return "mdi:toggle-switch-variant" if self.is_on else "mdi:toggle-switch-variant-off"
 
 
-class OmniLogicPumpSwitchEntity(OmniLogicSwitchEntity[EntityIndexPump]):
+class OmniLogicPumpSwitchEntity(OmniLogicSwitchEntity[EntityIndexPump], OmniLogicEntity[Pump, EntityIndexPump]):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:
@@ -218,7 +221,7 @@ class OmniLogicPumpSwitchEntity(OmniLogicSwitchEntity[EntityIndexPump]):
         self.set_telemetry({"state": PumpState.OFF, "speed": 0})
 
 
-class OmniLogicFilterSwitchEntity(OmniLogicSwitchEntity[EntityIndexFilter]):
+class OmniLogicFilterSwitchEntity(OmniLogicSwitchEntity[EntityIndexFilter], OmniLogicEntity[Filter, EntityIndexFilter]):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:
@@ -266,7 +269,7 @@ class OmniLogicFilterSwitchEntity(OmniLogicSwitchEntity[EntityIndexFilter]):
         }
 
 
-class OmniLogicChlorinatorSwitchEntity(OmniLogicEntity[EntityIndexChlorinator], SwitchEntity):
+class OmniLogicChlorinatorSwitchEntity(OmniLogicEntity[Chlorinator, EntityIndexChlorinator], SwitchEntity):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:
@@ -300,7 +303,7 @@ class OmniLogicChlorinatorSwitchEntity(OmniLogicEntity[EntityIndexChlorinator], 
         self.set_telemetry({"enable": False})
 
 
-class OmniLogicSpilloverSwitchEntity(OmniLogicEntity[EntityIndexBodyOfWater], SwitchEntity):
+class OmniLogicSpilloverSwitchEntity(OmniLogicEntity[Bow, EntityIndexBodyOfWater], SwitchEntity):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:

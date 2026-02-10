@@ -54,7 +54,7 @@ EquipmentTypes = TypeVar(
 )
 
 
-class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[EquipmentTypes]):
+class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[EquipmentTypes, T]):
     _attr_has_entity_name = True
 
     equipment: EquipmentTypes

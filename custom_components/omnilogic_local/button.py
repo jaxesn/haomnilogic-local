@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from homeassistant.components.button import ButtonEntity
 from homeassistant.helpers.event import async_call_later
@@ -10,6 +10,7 @@ from pyomnilogic_local.omnitypes import FilterSpeedPresets, FilterType, PumpSpee
 
 from .const import DOMAIN, KEY_COORDINATOR, UPDATE_DELAY_SECONDS
 from .entity import OmniLogicEntity
+from .types.entity_index import EntityIndexBackyard, EntityIndexFilter, EntityIndexPump
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -47,7 +48,7 @@ PumpTypeT = TypeVar("PumpTypeT", bound=Pump | Filter)
 SpeedPresetT = TypeVar("SpeedPresetT", bound=PumpSpeedPresets | FilterSpeedPresets)
 
 
-class OmniLogicSpeedPresetButtonEntity(OmniLogicEntity[PumpTypeT], ButtonEntity):
+class OmniLogicSpeedPresetButtonEntity(OmniLogicEntity[PumpTypeT, Any], ButtonEntity, Generic[PumpTypeT]):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:
@@ -89,7 +90,7 @@ class OmniLogicSpeedPresetButtonEntity(OmniLogicEntity[PumpTypeT], ButtonEntity)
         return attrs
 
 
-class OmniLogicPumpButtonEntity(OmniLogicSpeedPresetButtonEntity[Pump]):
+class OmniLogicPumpButtonEntity(OmniLogicSpeedPresetButtonEntity[Pump], OmniLogicEntity[Pump, EntityIndexPump]):
     speed: PumpSpeedPresets
 
     async def async_press(self) -> None:
@@ -97,7 +98,7 @@ class OmniLogicPumpButtonEntity(OmniLogicSpeedPresetButtonEntity[Pump]):
         async_call_later(self.hass, UPDATE_DELAY_SECONDS, self._schedule_refresh_callback)
 
 
-class OmniLogicFilterButtonEntity(OmniLogicSpeedPresetButtonEntity[Filter]):
+class OmniLogicFilterButtonEntity(OmniLogicSpeedPresetButtonEntity[Filter], OmniLogicEntity[Filter, EntityIndexFilter]):
     speed: FilterSpeedPresets
 
     async def async_press(self) -> None:
@@ -105,7 +106,7 @@ class OmniLogicFilterButtonEntity(OmniLogicSpeedPresetButtonEntity[Filter]):
         async_call_later(self.hass, UPDATE_DELAY_SECONDS, self._schedule_refresh_callback)
 
 
-class OmniLogicIdleButtonEntity(OmniLogicEntity[Backyard], ButtonEntity):
+class OmniLogicIdleButtonEntity(OmniLogicEntity[Backyard, EntityIndexBackyard], ButtonEntity):
     def __init__(self, coordinator: OmniLogicCoordinator, equipment: Backyard) -> None:
         super().__init__(coordinator, equipment)
 

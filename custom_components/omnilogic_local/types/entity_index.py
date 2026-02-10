@@ -21,9 +21,9 @@ from pyomnilogic_local.models.mspconfig import (
 from pyomnilogic_local.models.telemetry import (
     TelemetryBackyard,
     TelemetryBoW,
+    TelemetryCSAD,
     TelemetryChlorinator,
     TelemetryColorLogicLight,
-    TelemetryCSAD,
     TelemetryFilter,
     TelemetryGroup,
     TelemetryHeater,
@@ -72,67 +72,67 @@ class EntityIndexData:
 EntityIndexT = dict[int, EntityIndexData]
 
 
-class EntityIndexBackyard:
+class EntityIndexBackyard(EntityIndexData):
     msp_config: MSPBackyard
     telemetry: TelemetryBackyard
 
 
-class EntityIndexBodyOfWater:
+class EntityIndexBodyOfWater(EntityIndexData):
     msp_config: MSPBoW
     telemetry: TelemetryBoW
 
 
-class EntityIndexColorLogicLight:
+class EntityIndexColorLogicLight(EntityIndexData):
     msp_config: MSPColorLogicLight
     telemetry: TelemetryColorLogicLight
 
 
-class EntityIndexFilter:
+class EntityIndexFilter(EntityIndexData):
     msp_config: MSPFilter
     telemetry: TelemetryFilter
 
 
-class EntityIndexHeater:
+class EntityIndexHeater(EntityIndexData):
     msp_config: MSPVirtualHeater
     telemetry: TelemetryVirtualHeater
 
 
-class EntityIndexHeaterEquip:
+class EntityIndexHeaterEquip(EntityIndexData):
     msp_config: MSPHeaterEquip
     telemetry: TelemetryHeater
 
 
-class EntityIndexChlorinator:
+class EntityIndexChlorinator(EntityIndexData):
     msp_config: MSPChlorinator
     telemetry: TelemetryChlorinator
 
 
-class EntityIndexCSAD:
+class EntityIndexCSAD(EntityIndexData):
     msp_config: MSPCSAD
     telemetry: TelemetryCSAD
 
 
-class EntityIndexChlorinatorEquip:
+class EntityIndexChlorinatorEquip(EntityIndexData):
     msp_config: MSPChlorinatorEquip
     telemetry: TelemetryChlorinator
 
 
-class EntityIndexPump:
+class EntityIndexPump(EntityIndexData):
     msp_config: MSPPump
     telemetry: TelemetryPump
 
 
-class EntityIndexRelay:
+class EntityIndexRelay(EntityIndexData):
     msp_config: MSPRelay
     telemetry: TelemetryRelay
 
 
-class EntityIndexSensor:
+class EntityIndexSensor(EntityIndexData):
     msp_config: MSPSensor
     telemetry: None
 
 
-class EntityIndexValveActuator:
+class EntityIndexValveActuator(EntityIndexData):
     msp_config: MSPRelay
     telemetry: TelemetryValveActuator
 

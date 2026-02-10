@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import logging
 from math import floor
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from homeassistant.components.number import NumberDeviceClass, NumberEntity, NumberMode
 from homeassistant.const import PERCENTAGE, UnitOfTemperature
+from pyomnilogic_local import Chlorinator, Filter, Heater, Pump
 from pyomnilogic_local.omnitypes import (
     BodyOfWaterType,
     ChlorinatorDispenserType,
@@ -105,7 +106,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 T = TypeVar("T", EntityIndexPump, EntityIndexFilter)
 
 
-class OmniLogicVSPNumberEntity(OmniLogicEntity[T], NumberEntity):
+class OmniLogicVSPNumberEntity(OmniLogicEntity[Any, T], NumberEntity, Generic[T]):
     """An entity using CoordinatorEntity.
 
     The CoordinatorEntity class provides:
@@ -190,7 +191,7 @@ class OmniLogicVSPNumberEntity(OmniLogicEntity[T], NumberEntity):
         raise NotImplementedError
 
 
-class OmniLogicPumpNumberEntity(OmniLogicVSPNumberEntity[EntityIndexPump]):
+class OmniLogicPumpNumberEntity(OmniLogicVSPNumberEntity[EntityIndexPump], OmniLogicEntity[Pump, EntityIndexPump]):
     """An entity representing a number platform for an OmniLogic Pump."""
 
     async def async_set_native_value(self, value: float) -> None:
@@ -205,7 +206,7 @@ class OmniLogicPumpNumberEntity(OmniLogicVSPNumberEntity[EntityIndexPump]):
         self.set_telemetry({"state": PumpState.ON, "speed": new_speed_pct})
 
 
-class OmniLogicFilterNumberEntity(OmniLogicVSPNumberEntity[EntityIndexFilter]):
+class OmniLogicFilterNumberEntity(OmniLogicVSPNumberEntity[EntityIndexFilter], OmniLogicEntity[Filter, EntityIndexFilter]):
     """An OmniLogicFilterNumberEntity is a special case of an OmniLogicPumpNumberEntity."""
 
     async def async_set_native_value(self, value: float) -> None:
@@ -220,7 +221,7 @@ class OmniLogicFilterNumberEntity(OmniLogicVSPNumberEntity[EntityIndexFilter]):
         self.set_telemetry({"state": FilterState.ON, "speed": new_speed_pct})
 
 
-class OmniLogicSolarSetPointNumberEntity(OmniLogicEntity[EntityIndexHeater], NumberEntity):
+class OmniLogicSolarSetPointNumberEntity(OmniLogicEntity[Heater, EntityIndexHeater], NumberEntity):
     """An OmniLogicFilterNumberEntity is a special case of an OmniLogicPumpNumberEntity."""
 
     _attr_device_class = NumberDeviceClass.TEMPERATURE
@@ -253,7 +254,7 @@ class OmniLogicSolarSetPointNumberEntity(OmniLogicEntity[EntityIndexHeater], Num
         self.set_config({"solar_set_point": int(value)})
 
 
-class OmniLogicChlorinatorTimedPercentNumberEntity(OmniLogicEntity[EntityIndexChlorinator], NumberEntity):
+class OmniLogicChlorinatorTimedPercentNumberEntity(OmniLogicEntity[Chlorinator, EntityIndexChlorinator], NumberEntity):
     """An OmniLogicFilterNumberEntity is a special case of an OmniLogicPumpNumberEntity."""
 
     _attr_name = "Chlorinator Timed Percent"
