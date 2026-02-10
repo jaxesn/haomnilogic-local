@@ -11,9 +11,11 @@
   "integration_type": "device",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/cryptk/haomnilogic-local/issues",
-  "loggers": ["pyomnilogic_local"],
+  "loggers": [
+    "pyomnilogic_local"
+  ],
   "requirements": [
-    "python_omnilogic_local==0.20.8"
+    "git+https://github.com/jaxesn/python-omnilogic-local.git@fec0c66#python-omnilogic-local==0.21.1"
   ],
   "ssdp": [],
   "version": "0.7.12",
