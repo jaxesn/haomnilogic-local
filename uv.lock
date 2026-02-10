@@ -1489,7 +1489,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "python-omnilogic-local", extras = ["cli"], git = "https://github.com/jaxesn/python-omnilogic-local?rev=93a23c3" }]
+requires-dist = [{ name = "python-omnilogic-local", extras = ["cli"], git = "https://github.com/jaxesn/python-omnilogic-local?rev=fec0c66" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -2779,8 +2779,8 @@ wheels = [
 
 [[package]]
 name = "python-omnilogic-local"
-version = "0.21.0"
-source = { git = "https://github.com/jaxesn/python-omnilogic-local?rev=93a23c3#93a23c30b570c4e6f1213a210d9f808db1a60905" }
+version = "0.21.1"
+source = { git = "https://github.com/jaxesn/python-omnilogic-local?rev=fec0c66#fec0c669b1a4f1420e96a0763cd0d0420e5a2cf1" }
 dependencies = [
     { name = "click" },
     { name = "pydantic" },

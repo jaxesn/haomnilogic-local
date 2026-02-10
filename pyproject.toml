@@ -101,4 +101,4 @@ voluptuous = "vol"
 "homeassistant.helpers.issue_registry" = "ir"
 
 [tool.uv.sources]
-python-omnilogic-local = { git = "https://github.com/jaxesn/python-omnilogic-local", rev = "93a23c3" }
+python-omnilogic-local = { git = "https://github.com/jaxesn/python-omnilogic-local", rev = "fec0c66" }
