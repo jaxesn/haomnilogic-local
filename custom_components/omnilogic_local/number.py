@@ -38,6 +38,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the switch platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
+    _LOGGER.debug("Setting up number platform")
 
     filters_and_pumps = get_entities_of_omni_types(coordinator.data, [OmniType.FILTER, OmniType.PUMP])
 
@@ -100,6 +101,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                     "Your system has an unsupported chlorinator, please raise an issue: https://github.com/cryptk/haomnilogic-local/issues"
                 )
 
+    _LOGGER.debug("Adding %s number entities", len(entities))
     async_add_entities(entities)
 
 

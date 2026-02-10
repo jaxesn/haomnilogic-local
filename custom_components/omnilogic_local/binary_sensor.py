@@ -24,6 +24,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     """Set up the switch platform."""
     coordinator: OmniLogicCoordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
     entities: list[BinarySensorEntity] = []
+    _LOGGER.debug("Setting up binary_sensor platform")
 
     # Create a binary sensor entity indicating if we are in Service Mode
     entities.append(OmniLogicServiceModeBinarySensorEntity(coordinator=coordinator, equipment=coordinator.omni.backyard))
@@ -47,6 +48,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             )
         )
 
+    _LOGGER.debug("Adding %s binary_sensor entities", len(entities))
     async_add_entities(entities)
 
 

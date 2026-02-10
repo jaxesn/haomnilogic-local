@@ -32,11 +32,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     """Set up the light platform."""
     coordinator: OmniLogicCoordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
     entities: list[LightEntity] = []
+    _LOGGER.debug("Setting up light platform")
 
     all_lights = coordinator.omni.all_lights
     for _, _, light in all_lights.items():
         entities.append(OmniLogicLightEntity(coordinator=coordinator, equipment=light))
 
+    _LOGGER.debug("Adding %s light entities", len(entities))
     async_add_entities(entities)
 
 

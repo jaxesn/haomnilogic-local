@@ -56,4 +56,5 @@ class OmniLogicCoordinator(DataUpdateCoordinator["EntityIndexT"]):
                 msp_config=device,
                 telemetry=self.omni.telemetry.get_telem_by_systemid(device.system_id),
             )
+        _LOGGER.debug("OmniLogic reported %s devices in the entity index", len(entities))
         return entities

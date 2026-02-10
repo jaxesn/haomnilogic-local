@@ -46,6 +46,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     entities = []
     coordinator = hass.data[DOMAIN][entry.entry_id][KEY_COORDINATOR]
     all_switches = get_entities_of_hass_type(coordinator.data, "switch")
+    _LOGGER.debug("Found %s switch entities in coordinator data", len(all_switches))
 
     for system_id, switch in all_switches.items():
         match switch.msp_config.omni_type:
@@ -95,6 +96,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                     )
                     entities.append(OmniLogicSpilloverSwitchEntity(coordinator=coordinator, context=system_id))
 
+    _LOGGER.debug("Adding %s switch entities", len(entities))
     async_add_entities(entities)
 
 

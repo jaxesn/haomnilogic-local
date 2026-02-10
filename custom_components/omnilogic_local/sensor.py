@@ -41,6 +41,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     # Create a sensor entity for all temperature sensors
     all_sensors = get_entities_of_hass_type(coordinator.data, "sensor")
+    _LOGGER.debug("Found %s sensor entities in coordinator data", len(all_sensors))
     entities = []
     for system_id, sensor in all_sensors.items():
         match sensor.msp_config.equip_type:
@@ -139,6 +140,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                     "Your system has an unsupported chlorinator, please raise an issue: https://github.com/cryptk/haomnilogic-local/issues"
                 )
 
+    _LOGGER.debug("Adding %s sensor entities", len(entities))
     async_add_entities(entities)
 
 
