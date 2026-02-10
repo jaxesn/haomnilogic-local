@@ -100,8 +100,8 @@ class OmniLogicLightEntity(OmniLogicEntity[ColorLogicLight], LightEntity):
         return sorted([effect.pretty() for effect in self.equipment.effects])
 
     @property
-    def _extra_state_attributes(self) -> dict[str, int | str]:
-        return {
+    def extra_state_attributes(self) -> dict[str, Any]:
+        return super().extra_state_attributes | {
             "omni_state": self.equipment.state.pretty(),
             "omni_speed": self.equipment.speed.pretty(),
             "omni_brightness": self.equipment.brightness,

@@ -77,14 +77,16 @@ class OmniLogicSpeedPresetButtonEntity(OmniLogicEntity[PumpTypeT], ButtonEntity)
         return f"{self.equipment.name} {self.speed.name.capitalize()} Speed"
 
     @property
-    def _extra_state_attributes(self) -> dict[str, Any]:
+    def extra_state_attributes(self) -> dict[str, Any]:
+        attrs = super().extra_state_attributes
         match self.speed:
             case PumpSpeedPresets.LOW | FilterSpeedPresets.LOW:
-                return {"speed": self.equipment.low_speed}
+                attrs["speed"] = self.equipment.low_speed
             case PumpSpeedPresets.MEDIUM | FilterSpeedPresets.MEDIUM:
-                return {"speed": self.equipment.medium_speed}
+                attrs["speed"] = self.equipment.medium_speed
             case PumpSpeedPresets.HIGH | FilterSpeedPresets.HIGH:
-                return {"speed": self.equipment.high_speed}
+                attrs["speed"] = self.equipment.high_speed
+        return attrs
 
 
 class OmniLogicPumpButtonEntity(OmniLogicSpeedPresetButtonEntity[Pump]):
