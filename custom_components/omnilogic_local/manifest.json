@@ -18,6 +18,6 @@
     "git+https://github.com/jaxesn/python-omnilogic-local.git@fec0c66#python-omnilogic-local==0.21.1"
   ],
   "ssdp": [],
-  "version": "0.7.12",
+  "version": "0.7.13",
   "zeroconf": []
 }
