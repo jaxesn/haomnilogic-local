@@ -53,12 +53,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 )
                 entities.append(OmniLogicAirTemperatureSensorEntity(coordinator=coordinator, context=system_id))
             case SensorType.WATER_TEMP:
-                _LOGGER.debug(
-                    "Configuring sensor for water temperature with ID: %s, Name: %s",
-                    sensor.msp_config.system_id,
-                    sensor.msp_config.name,
-                )
-                entities.append(OmniLogicWaterTemperatureSensorEntity(coordinator=coordinator, context=system_id))
+                if sensor.msp_config.bow_id != -1:
+                    _LOGGER.debug(
+                        "Configuring sensor for water temperature with ID: %s, Name: %s",
+                        sensor.msp_config.system_id,
+                        sensor.msp_config.name,
+                    )
+                    entities.append(OmniLogicWaterTemperatureSensorEntity(coordinator=coordinator, context=system_id))
+                else:
+                    _LOGGER.warning(
+                        "Water temperature sensor (ID: %s, Name: %s) is not associated with a Body of Water. Skipping.",
+                        sensor.msp_config.system_id,
+                        sensor.msp_config.name,
+                    )
             case SensorType.SOLAR_TEMP:
                 # Reference https://github.com/cryptk/haomnilogic-local/issues/60 for why we do this
                 # If a BoW has more than one solar temperature sensor, we need to only configure the sensors that are associated with actual
@@ -161,6 +168,7 @@ class OmniLogicTemperatureSensorEntity(OmniLogicEntity[Sensor, EntityIndexSensor
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_state_class = SensorStateClass.MEASUREMENT
     _sensed_system_id: int | None = None
+    _sensed_system_id_error_logged = False
 
     def __init__(self, coordinator: OmniLogicCoordinator, context: int, sensed_type: OmniType) -> None:
         """Pass coordinator to CoordinatorEntity."""
@@ -172,14 +180,21 @@ class OmniLogicTemperatureSensorEntity(OmniLogicEntity[Sensor, EntityIndexSensor
         return cast("T", self.coordinator.data[self.sensed_system_id])
 
     @property
-    def sensed_system_id(self) -> int:
+    def sensed_system_id(self) -> int | None:
         if self._sensed_system_id is not None and self._sensed_system_id != -1:
             return self._sensed_system_id
         if self.bow_id is not None and self.bow_id != -1:
             return self.bow_id
-        raise NotImplementedError(
-            f"Unable to determine sensed_system_id for {self.entity_id}: _sensed_system_id={self._sensed_system_id}, bow_id={self.bow_id}"
-        )
+
+        if not self._sensed_system_id_error_logged:
+            _LOGGER.warning(
+                "Unable to determine sensed_system_id for %s: _sensed_system_id=%s, bow_id=%s",
+                self.entity_id,
+                self._sensed_system_id,
+                self.bow_id,
+            )
+            self._sensed_system_id_error_logged = True
+        return None
 
     @property
     def native_unit_of_measurement(self) -> str | None:
@@ -203,6 +218,8 @@ class OmniLogicAirTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Entit
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
+        if self.sensed_system_id is None:
+            return None
         temp = self.sensed_data.telemetry.air_temp
         return temp if temp not in [-1, 255, 65535] else None
 
@@ -213,6 +230,8 @@ class OmniLogicWaterTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Ent
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
+        if self.sensed_system_id is None:
+            return None
         temp = self.sensed_data.telemetry.water_temp
         return temp if temp not in [-1, 255, 65535] else None
 
@@ -224,6 +243,8 @@ class OmniLogicSolarTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Ent
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
+        if self.sensed_system_id is None:
+            return None
         temp = self.sensed_data.telemetry.temp
         return temp if temp not in [-1, 255, 65535] else None
 
