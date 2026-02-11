@@ -15,9 +15,9 @@
     "pyomnilogic_local"
   ],
   "requirements": [
-    "git+https://github.com/jaxesn/python-omnilogic-local.git@fec0c66#python-omnilogic-local==0.21.1"
+    "git+https://github.com/jaxesn/python-omnilogic-local.git@1c4378a#python-omnilogic-local==0.21.2"
   ],
   "ssdp": [],
-  "version": "0.7.13",
+  "version": "0.7.14",
   "zeroconf": []
 }

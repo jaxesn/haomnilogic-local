@@ -1471,7 +1471,7 @@ wheels = [
 
 [[package]]
 name = "haomnilogic-local"
-version = "0.7.12"
+version = "0.7.14"
 source = { virtual = "." }
 dependencies = [
     { name = "python-omnilogic-local", extra = ["cli"] },
@@ -1489,7 +1489,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "python-omnilogic-local", extras = ["cli"], git = "https://github.com/jaxesn/python-omnilogic-local?rev=a69bf82" }]
+requires-dist = [{ name = "python-omnilogic-local", extras = ["cli"], git = "https://github.com/jaxesn/python-omnilogic-local?rev=1c4378a" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -2779,8 +2779,8 @@ wheels = [
 
 [[package]]
 name = "python-omnilogic-local"
-version = "0.21.1"
-source = { git = "https://github.com/jaxesn/python-omnilogic-local?rev=a69bf82#a69bf8212fb5e146013917fe9a5e3c43a2db9205" }
+version = "0.21.2"
+source = { git = "https://github.com/jaxesn/python-omnilogic-local?rev=1c4378a#1c4378a28420ad0905a6aadfca4c01924468d480" }
 dependencies = [
     { name = "click" },
     { name = "pydantic" },
