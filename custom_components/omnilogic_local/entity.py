@@ -98,7 +98,7 @@ class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[Equipment
         # as it is the most current data from the library.
         if self.system_id is not None:
             _LOGGER.debug("updating %s - %s: %s", self.system_id, self.equipment.name, self.equipment)
-            # self.equipment = cast("EquipmentTypes", self.coordinator.omni.get_equipment_by_id(self.system_id))
+            self.equipment = cast("EquipmentTypes", self.coordinator.omni.get_equipment_by_id(self.system_id))
         self.async_write_ha_state()
 
     @property

@@ -46,7 +46,7 @@ class OmniLogicCoordinator(DataUpdateCoordinator["EntityIndexT"]):
 
     async def _async_update_data(self) -> EntityIndexT:
         """Update data via library."""
-        await self.omni.refresh(force=True)
+        await self.omni.refresh(force=False)
 
         from .models.entity_index import EntityIndexData
 
