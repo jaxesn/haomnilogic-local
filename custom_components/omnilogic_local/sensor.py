@@ -218,7 +218,7 @@ class OmniLogicAirTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Entit
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
-        if self.sensed_system_id is None:
+        if self.sensed_system_id is None or self.sensed_data.telemetry is None:
             return None
         temp = self.sensed_data.telemetry.air_temp
         return temp if temp not in [-1, 255, 65535] else None
@@ -230,7 +230,7 @@ class OmniLogicWaterTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Ent
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
-        if self.sensed_system_id is None:
+        if self.sensed_system_id is None or self.sensed_data.telemetry is None:
             return None
         temp = self.sensed_data.telemetry.water_temp
         return temp if temp not in [-1, 255, 65535] else None
@@ -243,7 +243,7 @@ class OmniLogicSolarTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Ent
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
-        if self.sensed_system_id is None:
+        if self.sensed_system_id is None or self.sensed_data.telemetry is None:
             return None
         temp = self.sensed_data.telemetry.temp
         return temp if temp not in [-1, 255, 65535] else None
@@ -256,6 +256,8 @@ class OmniLogicFilterEnergySensorEntity(OmniLogicEntity[Filter, EntityIndexFilte
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
+        if self.data.telemetry is None:
+            return None
         return (
             self.data.telemetry.power
             if self.data.telemetry.state
@@ -286,6 +288,8 @@ class OmniLogicChlorinatorSaltLevelSensorEntity(OmniLogicEntity[Chlorinator, Ent
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
+        if self.data.telemetry is None:
+            return None
         match self._sensor_type:
             case "average":
                 return self.data.telemetry.avg_salt_level
@@ -306,10 +310,15 @@ class OmniLogicCSADSensorEntity(OmniLogicEntity[CSAD, EntityIndexCSAD], SensorEn
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
+        if self.data.telemetry is None:
+            return None
         return self.data.telemetry.ph + self.data.msp_config.calibration_value
 
     @property
     def extra_state_attributes(self) -> dict[str, int | str]:
+        if self.data.telemetry is None:
+            return super().extra_state_attributes
+
         return super().extra_state_attributes | {
             "orp": self.data.telemetry.orp,
             "mode": self.data.telemetry.mode,
@@ -330,10 +339,15 @@ class OmniLogicCSADAcidORPEntity(OmniLogicEntity[CSAD, EntityIndexCSAD], SensorE
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
+        if self.data.telemetry is None:
+            return None
         return self.data.telemetry.orp
 
     @property
     def extra_state_attributes(self) -> dict[str, int | str]:
+        if self.data.telemetry is None:
+            return super().extra_state_attributes
+
         return super().extra_state_attributes | {
             "target_level": self.data.msp_config.orp_target_level,
             "runtime_level": self.data.msp_config.orp_runtime_level,

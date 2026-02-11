@@ -58,10 +58,14 @@ class OmniLogicServiceModeBinarySensorEntity(OmniLogicEntity[Backyard, EntityInd
     @property
     def available(self) -> bool:
         # This is one of the few things we can pull from the telemetry even if we are in service mode
+        if self.equipment.telemetry is None:
+            return False
         return True
 
     @property
     def is_on(self) -> bool:
+        if self.equipment.telemetry is None:
+            return False
         return self.equipment.is_ready
 
 
@@ -80,6 +84,8 @@ class OmniLogicHeaterEquipBinarySensorEntity(OmniLogicEntity[HeaterEquipment, En
 
     @property
     def is_on(self) -> bool:
+        if self.equipment.telemetry is None:
+            return False
         return self.equipment.is_on
 
 
@@ -96,4 +102,6 @@ class OmniLogicFlowBinarySensorEntity(OmniLogicEntity[Bow, EntityIndexBodyOfWate
 
     @property
     def is_on(self) -> bool | None:
+        if self.equipment.telemetry is None:
+            return None
         return self.equipment.flow

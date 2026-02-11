@@ -129,7 +129,9 @@ class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[Equipment
 
     @property
     def available(self) -> bool:
-        return self.equipment.is_ready
+        if (hasattr(self.equipment, "telemetry") and self.equipment.telemetry is None) or not self.equipment.is_ready:
+            return False
+        return True
 
     @property
     def device_info(self) -> DeviceInfo:
