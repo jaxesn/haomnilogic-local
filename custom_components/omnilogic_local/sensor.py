@@ -233,9 +233,23 @@ class OmniLogicWaterTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Ent
         if self.sensed_system_id is None:
             _LOGGER.debug("Water Temp Sensor %s: Sensed System ID is None", self.entity_id)
             return None
+
+        # DEBUG: Trace the telemetry link
         if self.sensed_data.telemetry is None:
-            _LOGGER.debug("Water Temp Sensor %s: Telemetry is None for system_id %s", self.entity_id, self.sensed_system_id)
+            _LOGGER.warning(
+                "Water Temp Sensor %s: Telemetry is None for system_id %s (Data Type: %s)",
+                self.entity_id,
+                self.sensed_system_id,
+                type(self.sensed_data),
+            )
             return None
+
+        _LOGGER.debug(
+            "Water Temp Sensor %s (SystemID: %s): Inspecting Telemetry: %s",
+            self.entity_id,
+            self.sensed_system_id,
+            self.sensed_data.telemetry,
+        )
 
         temp = self.sensed_data.telemetry.water_temp
         if temp in [-1, 255, 65535]:
