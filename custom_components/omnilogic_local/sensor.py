@@ -230,10 +230,19 @@ class OmniLogicWaterTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[Ent
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
-        if self.sensed_system_id is None or self.sensed_data.telemetry is None:
+        if self.sensed_system_id is None:
+            _LOGGER.debug("Water Temp Sensor %s: Sensed System ID is None", self.entity_id)
             return None
+        if self.sensed_data.telemetry is None:
+            _LOGGER.debug("Water Temp Sensor %s: Telemetry is None for system_id %s", self.entity_id, self.sensed_system_id)
+            return None
+
         temp = self.sensed_data.telemetry.water_temp
-        return temp if temp not in [-1, 255, 65535] else None
+        if temp in [-1, 255, 65535]:
+            _LOGGER.debug("Water Temp Sensor %s: Invalid temp value %s", self.entity_id, temp)
+            return None
+
+        return temp
 
 
 class OmniLogicSolarTemperatureSensorEntity(OmniLogicTemperatureSensorEntity[EntityIndexHeaterEquip]):
