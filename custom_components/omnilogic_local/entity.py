@@ -129,6 +129,7 @@ class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[Equipment
 
     @property
     def available(self) -> bool:
+        _LOGGER.debug("available %s - %s: %s", self.system_id, self.equipment.name, self.equipment)
         if (hasattr(self.equipment, "telemetry") and self.equipment.telemetry is None) or not self.equipment.is_ready:
             return False
         return True
