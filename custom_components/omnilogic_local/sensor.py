@@ -44,6 +44,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     _LOGGER.debug("Found %s sensor entities in coordinator data", len(all_sensors))
     entities = []
     for system_id, sensor in all_sensors.items():
+        _LOGGER.debug("Processing sensor: SystemID=%s, Name=%s, Type=%s", system_id, sensor.msp_config.name, sensor.msp_config.equip_type)
         match sensor.msp_config.equip_type:
             case SensorType.AIR_TEMP:
                 _LOGGER.debug(
