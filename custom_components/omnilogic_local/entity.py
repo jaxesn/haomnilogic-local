@@ -24,11 +24,12 @@ from pyomnilogic_local import (
     Schedule,
     Sensor,
 )
-
 from pyomnilogic_local.models.mspconfig import MSPConfig
+from pyomnilogic_local.omnitypes import OmniType
+
 from .const import BACKYARD_SYSTEM_ID, DOMAIN, MANUFACTURER
 from .coordinator import OmniLogicCoordinator
-from .models.entity_index import EntityIndexData, EntityIndexT, TelemetryTypes
+from .models.entity_index import EntityIndexData, TelemetryTypes
 
 T = TypeVar("T", bound=EntityIndexData)
 
@@ -129,7 +130,14 @@ class OmniLogicEntity(CoordinatorEntity[OmniLogicCoordinator], Generic[Equipment
 
     @property
     def available(self) -> bool:
-        _LOGGER.debug("available %s - %s: %s", self.system_id, self.equipment.name, self.equipment)
+        _LOGGER.debug("available %s - %s: %s. %s", self.system_id, self.equipment.name, self.equipment.is_ready, self.equipment.telemetry)
+
+        # Sensors (air/water temp) do not have their own telemetry object;
+        # their data comes from Backyard/BodyOfWater telemetry.
+        # So we skip the telemetry check for them.
+        if self.equipment.omni_type == OmniType.SENSOR:
+            return True
+
         if (hasattr(self.equipment, "telemetry") and self.equipment.telemetry is None) or not self.equipment.is_ready:
             return False
         return True
