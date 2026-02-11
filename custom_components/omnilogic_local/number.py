@@ -155,7 +155,7 @@ class OmniLogicVSPNumberEntity(OmniLogicEntity[Any, T], NumberEntity, Generic[T]
 
     @property
     def native_unit_of_measurement(self) -> str | None:
-        return self.get_system_config().vsp_speed_format
+        return self.get_system_config().system.vsp_speed_format
 
     @property
     def native_max_value(self) -> float:
@@ -244,7 +244,7 @@ class OmniLogicSolarSetPointNumberEntity(OmniLogicEntity[Heater, EntityIndexHeat
 
     @property
     def native_unit_of_measurement(self) -> str | None:
-        return str(UnitOfTemperature.CELSIUS) if self.get_system_config().units == "Metric" else str(UnitOfTemperature.FAHRENHEIT)
+        return str(UnitOfTemperature.CELSIUS) if self.get_system_config().system.units == "Metric" else str(UnitOfTemperature.FAHRENHEIT)
 
     async def async_set_native_value(self, value: float) -> None:
         await self.coordinator.omni_api.async_set_solar_heater(
